@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة العلوم - الوحدة الأولى (الخلية)</title>
+    <style>
+        :root {
+            --primary: #9b59b6;
+            --accent: #f1c40f;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --danger: #ef4444;
+            --info: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 950px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #334155;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 { color: var(--accent); font-size: 2.2rem; margin-bottom: 10px; }
+        h2 { color: #a855f7; margin-bottom: 20px; }
+        p { font-size: 1.05rem; margin-bottom: 20px; color: #94a3b8; }
+
+        .official-header {
+            background: #0f172a;
+            border: 2px solid #475569;
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .official-header .side-info {
+            font-size: 17px;
+            line-height: 1.8;
+            font-weight: bold;
+            color: #f8fafc;
+            text-align: right;
+        }
+
+        .official-header .side-info-left {
+            font-size: 17px;
+            line-height: 1.8;
+            font-weight: bold;
+            color: #f8fafc;
+            text-align: left;
+        }
+
+        .official-header .class-title {
+            color: var(--accent);
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .teacher-name {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .empty-center { flex-grow: 1; }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-control:focus { border-color: var(--primary); }
+
+        .role-cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .role-card {
+            background: #334155;
+            border: 3px solid #475569;
+            border-radius: 15px;
+            padding: 25px;
+            width: 220px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: #475569;
+        }
+
+        .color-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .color-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-btn.selected {
+            border-color: #fff;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+            margin: 5px;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
+        .btn-secondary { background: #64748b; box-shadow: none; }
+        .btn-info { background: var(--info); }
+
+        .stages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stage-card {
+            background: #334155;
+            border: 2px solid #475569;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stage-card:hover {
+            border-color: var(--accent);
+            background: #475569;
+            transform: scale(1.02);
+        }
+
+        .track-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: #020617;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid #38bdf8;
+        }
+
+        canvas { width: 100%; height: 100%; }
+
+        .quiz-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #334155;
+        }
+
+        .stage-title { color: var(--accent); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+        .question-text { font-size: 1.15rem; font-weight: bold; margin-bottom: 20px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #334155;
+            color: white;
+            border: 2px solid #475569;
+            padding: 12px;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background: #475569; border-color: var(--info); }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .table-responsive {
+            max-height: 380px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #475569;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: #1e293b; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #334155; }
+        th { background: #a855f7; color: white; position: sticky; top: 0; }
+        tr:nth-child(even) { background: #0f172a; }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .role-cards { flex-direction: column; align-items: center; }
+            .official-header { flex-direction: column; text-align: center; gap: 15px; }
+            .official-header .side-info, .official-header .side-info-left { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+
+    <!-- 1. الشاشة الرئيسية -->
+    <div id="role-screen" class="screen active">
+        <div class="official-header">
+            <div class="side-info">
+                <div>دولة فلسطين</div>
+                <div>وزارة التربية والتعليم العالي</div>
+                <div>مديرية التربية والتعليم / طوباس</div>
+                <div>مدرسة ذكور طمون الأساسية العليا</div>
+            </div>
+            
+            <div class="empty-center"></div>
+
+            <div class="side-info-left">
+                <div class="class-title">الصف: الخامس الأساسي</div>
+                <div>المادة: العلوم والحياة</div>
+                <div class="teacher-name">معلم المادة: أ. أمين عبدالرازق</div>
+            </div>
+        </div>
+
+        <h1>مسابقة العلوم الإلكترونية 🔬🧫</h1>
+        <p>رحلة في عالم الخلية والتنظيم الحيوي</p>
+
+        <div class="role-cards">
+            <div class="role-card" onclick="goToStudentLogin()">
+                <div style="font-size: 3rem;">👨‍🎓</div>
+                <h3>دخول الطالب</h3>
+            </div>
+            <div class="role-card" onclick="goToTeacherLogin()">
+                <div style="font-size: 3rem;">👨‍🏫</div>
+                <h3>دخول المعلم</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. دخول الطالب -->
+    <div id="student-login-screen" class="screen">
+        <h2>تسجيل بيانات الطالب 📝</h2>
+        <div class="form-group">
+            <label>الاسم الثلاثي:</label>
+            <input type="text" id="student-name" class="form-control" placeholder="أدخل اسمك الثلاثي">
+        </div>
+        <div class="form-group">
+            <label>الصف:</label>
+            <input type="text" id="student-grade" class="form-control" value="الخامس" placeholder="مثال: الخامس">
+        </div>
+        <div class="form-group">
+            <label>الشعبة / الفصل:</label>
+            <input type="text" id="student-class" class="form-control" placeholder="مثال: أ أو ب">
+        </div>
+        <div class="form-group">
+            <label>اختر لون سفينتك الفضائية:</label>
+            <div class="color-selector">
+                <div class="color-btn selected" style="background: #38bdf8;" onclick="selectColor('#38bdf8', this)"></div>
+                <div class="color-btn" style="background: #f1c40f;" onclick="selectColor('#f1c40f', this)"></div>
+                <div class="color-btn" style="background: #ef4444;" onclick="selectColor('#ef4444', this)"></div>
+                <div class="color-btn" style="background: #2ecc71;" onclick="selectColor('#2ecc71', this)"></div>
+            </div>
+        </div>
+        <button class="btn" onclick="proceedToStageSelect()">اختيار جولات الوحدة الأولى 🚀</button>
+        <button class="btn btn-secondary" onclick="showScreen('role-screen')">رجوع</button>
+    </div>
+
+    <!-- 3. اختيار دروس/جولات الوحدة الأولى -->
+    <div id="stage-select-screen" class="screen">
+        <h2>جولات الوحدة الأولى: الخلية 🔬</h2>
+        <p>حدد الجولة التي تريد الإجابة عن أسئلتها:</p>
+        <div class="stages-grid">
+            <div class="stage-card" onclick="startSelectedStage(1)">
+                <h3>الجولة 1</h3>
+                <p>الأسئلة التنافسية والإجابات القصيرة</p>
+            </div>
+            <div class="stage-card" onclick="startSelectedStage(2)">
+                <h3>الجولة 2</h3>
+                <p>المقارنة والتصنيف</p>
+            </div>
+            <div class="stage-card" onclick="startSelectedStage(3)">
+                <h3>الجولة 3</h3>
+                <p>التفكير والتعليل العلمي</p>
+            </div>
+            <div class="stage-card" onclick="startSelectedStage(4)">
+                <h3>الجولة 4</h3>
+                <p>المحاكاة والتجارب والأنشطة</p>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="showScreen('student-login-screen')">رجوع لبيانات الطالب</button>
+    </div>
+
+    <!-- 4. دخول المعلم -->
+    <div id="teacher-login-screen" class="screen">
+        <h2>دخول المعلم 🔐</h2>
+        <div class="form-group">
+            <label>البريد الإلكتروني:</label>
+            <input type="email" id="teacher-email" class="form-control" placeholder="أدخل البريد الإلكتروني">
+        </div>
+        <div class="form-group">
+            <label>كلمة السر:</label>
+            <input type="password" id="teacher-pass" class="form-control" placeholder="أدخل كلمة السر">
+        </div>
+        <button class="btn" onclick="loginTeacher()">دخول لوحة التحكم 📊</button>
+        <button class="btn btn-info" onclick="resetTeacherPassword()">استعادة كلمة السر 📧</button>
+        <button class="btn btn-secondary" onclick="showScreen('role-screen')">رجوع</button>
+    </div>
+
+    <!-- 5. لوحة المعلم -->
+    <div id="teacher-dashboard-screen" class="screen">
+        <h2>لوحة المعلم - نتائج الصف الخامس 📈</h2>
+        <div style="margin-bottom: 15px;">
+            <button class="btn" onclick="exportToExcel()">تصدير إكسل 📥</button>
+            <button class="btn btn-info" onclick="setupTeacherAccount()">إعدادات البريد وكلمة السر ⚙️</button>
+            <button class="btn btn-danger" onclick="clearData()">مسح السجلات 🗑️</button>
+            <button class="btn btn-secondary" onclick="showScreen('role-screen')">تسجيل خروج</button>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الاسم الثلاثي</th>
+                        <th>الصف</th>
+                        <th>الشعبة</th>
+                        <th>الجولة 1</th>
+                        <th>الجولة 2</th>
+                        <th>الجولة 3</th>
+                        <th>الجولة 4</th>
+                        <th>المجموع</th>
+                        <th>التاريخ والوقت</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. نهاية الدرس/الاستراحة -->
+    <div id="stage-break-screen" class="screen">
+        <h2>🎉 ممتاز! أنهيت أسئلة هذه الجولة 🎉</h2>
+        <p>تم حفظ درجتك بنجاح في لوحة المعلم.</p>
+        <div style="font-size: 1.2rem; margin: 20px 0;">
+            <p>النقاط المحققة: <span id="break-stage-score" style="color:var(--accent); font-weight:bold;">0</span></p>
+        </div>
+        <button class="btn" onclick="showScreen('stage-select-screen')">اختر جولة أخرى 🧭</button>
+        <button class="btn btn-info" onclick="showScreen('role-screen')">العودة للرئيسية 🏠</button>
+    </div>
+
+    <!-- 7. شاشة اللعب -->
+    <div id="game-screen" class="screen">
+        <div class="hud">
+            <div>الطالب: <span id="hud-student-name" style="color:var(--accent)">-</span></div>
+            <div>السؤال: <span id="progress-text">0/0</span></div>
+            <div>النقاط: <span id="score-text">0</span></div>
+        </div>
+
+        <div class="track-container">
+            <canvas id="raceCanvas"></canvas>
+        </div>
+
+        <div class="quiz-box">
+            <div id="stage-title" class="stage-title">الوحدة الأولى: الخلية</div>
+            <div id="question" class="question-text">جاري إعداد السؤال...</div>
+            <div id="options" class="options-grid"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let teacherCreds = JSON.parse(localStorage.getItem('teacherCreds_grade5')) || {
+        email: "ameenmatar@gmail.com",
+        password: "admin"
+    };
+
+    let currentStudent = { name: '', grade: 'الخامس', classGroup: '', color: '#38bdf8' };
+    let currentStageNum = 1;
+    let stageQuestions = [];
+    let currentStageIndex = 0;
+    let stageScore = 0;
+    
+    let shipY = 90;
+    let shipX = 50;
+    let stars = [];
+
+    const canvas = document.getElementById('raceCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function initStars() {
+        stars = [];
+        for(let i = 0; i < 50; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 3 + 1
+            });
+        }
+    }
+
+    function resizeCanvas() {
+        if(canvas && canvas.parentElement) {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            initStars();
+        }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const targetScreen = document.getElementById(screenId);
+        if(targetScreen) {
+            targetScreen.classList.add('active');
+        }
+    }
+
+    function goToStudentLogin() { showScreen('student-login-screen'); }
+    function goToTeacherLogin() { showScreen('teacher-login-screen'); }
+
+    function selectColor(color, el) {
+        currentStudent.color = color;
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function loginTeacher() {
+        const email = document.getElementById('teacher-email').value.trim();
+        const pass = document.getElementById('teacher-pass').value.trim();
+
+        if (email === teacherCreds.email && pass === teacherCreds.password) {
+            renderTeacherTable();
+            showScreen('teacher-dashboard-screen');
+        } else {
+            alert("بيانات الدخول غير صحيحة!");
+        }
+    }
+
+    function resetTeacherPassword() {
+        const email = prompt("أدخل بريدك الإلكتروني المسجل:");
+        if (email && email.trim() === teacherCreds.email) {
+            alert(`كلمة السر الخاصة بك هي: ${teacherCreds.password}`);
+        } else {
+            alert("البريد الإلكتروني غير مطابق!");
+        }
+    }
+
+    function setupTeacherAccount() {
+        const newEmail = prompt("أدخل بريدك الجديد:", teacherCreds.email);
+        const newPass = prompt("أدخل كلمة السر الجديدة:", teacherCreds.password);
+
+        if (newEmail && newPass) {
+            teacherCreds.email = newEmail.trim();
+            teacherCreds.password = newPass.trim();
+            localStorage.setItem('teacherCreds_grade5', JSON.stringify(teacherCreds));
+            alert("تم التحديث بنجاح!");
+        }
+    }
+
+    function proceedToStageSelect() {
+        const name = document.getElementById('student-name').value.trim();
+        const grade = document.getElementById('student-grade').value.trim();
+        const classGroup = document.getElementById('student-class').value.trim();
+
+        if (!name || !classGroup || !grade) {
+            alert("يرجى إكمال جميع بيانات الطالب أولاً!");
+            return;
+        }
+
+        currentStudent.name = name;
+        currentStudent.grade = grade;
+        currentStudent.classGroup = classGroup;
+        showScreen('stage-select-screen');
+    }
+
+    function shuffleQuestions(questions) {
+        return questions.map(q => {
+            let optionsWithIndex = q.options.map((opt, idx) => ({
+                text: opt,
+                isCorrect: idx === q.answer
+            }));
+            
+            for (let i = optionsWithIndex.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithIndex[i], optionsWithIndex[j]] = [optionsWithIndex[j], optionsWithIndex[i]];
+            }
+
+            const newOptions = optionsWithIndex.map(o => o.text);
+            const newAnswer = optionsWithIndex.findIndex(o => o.isCorrect);
+
+            return {
+                ...q,
+                options: newOptions,
+                answer: newAnswer
+            };
+        });
+    }
+
+    function startSelectedStage(stageNum) {
+        currentStageNum = stageNum;
+        let filtered = unitOneQuestions.filter(q => q.stageNum === stageNum);
+        
+        stageQuestions = shuffleQuestions(filtered);
+        
+        currentStageIndex = 0;
+        stageScore = 0;
+        
+        showScreen('game-screen');
+        resizeCanvas();
+        shipX = 50;
+        shipY = canvas.height / 2;
+
+        document.getElementById('hud-student-name').innerText = `${currentStudent.name} (${currentStudent.grade} - ${currentStudent.classGroup})`;
+        showQuestion();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function showQuestion() {
+        if (currentStageIndex >= stageQuestions.length) {
+            saveStageResult();
+            document.getElementById('break-stage-score').innerText = stageScore;
+            showScreen('stage-break-screen');
+            return;
+        }
+
+        const q = stageQuestions[currentStageIndex];
+        document.getElementById('stage-title').innerText = q.stage;
+        document.getElementById('question').innerText = q.q;
+
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(idx);
+            optionsContainer.appendChild(btn);
+        });
+
+        document.getElementById('progress-text').innerText = `${currentStageIndex + 1}/${stageQuestions.length}`;
+        document.getElementById('score-text').innerText = stageScore;
+    }
+
+    function checkAnswer(selectedIndex) {
+        const q = stageQuestions[currentStageIndex];
+        if (selectedIndex === q.answer) {
+            stageScore += 100;
+            const step = (canvas.width - 100) / stageQuestions.length;
+            shipX += step;
+        }
+
+        currentStageIndex++;
+        showQuestion();
+    }
+
+    function calculateTotalScore(r) {
+        let sum = 0;
+        for (let i = 1; i <= 4; i++) {
+            let val = r[`stage${i}`];
+            if (typeof val === 'number') {
+                sum += val;
+            }
+        }
+        return sum;
+    }
+
+    function getCurrentDateTime() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ar-EG');
+        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        return `${dateStr} - ${timeStr}`;
+    }
+
+    function saveStageResult() {
+        let results = JSON.parse(localStorage.getItem('unitOneResults_grade5') || '[]');
+        let studentIndex = results.findIndex(r => r.name === currentStudent.name && r.classGroup === currentStudent.classGroup);
+
+        let existing = studentIndex !== -1 ? results[studentIndex] : {};
+
+        let updatedRecord = {
+            name: currentStudent.name,
+            grade: currentStudent.grade || 'الخامس',
+            classGroup: currentStudent.classGroup,
+            stage1: existing.stage1 !== undefined ? existing.stage1 : '-',
+            stage2: existing.stage2 !== undefined ? existing.stage2 : '-',
+            stage3: existing.stage3 !== undefined ? existing.stage3 : '-',
+            stage4: existing.stage4 !== undefined ? existing.stage4 : '-',
+            dateTime: getCurrentDateTime()
+        };
+
+        updatedRecord[`stage${currentStageNum}`] = stageScore;
+
+        if (studentIndex !== -1) {
+            results[studentIndex] = updatedRecord;
+        } else {
+            results.push(updatedRecord);
+        }
+
+        localStorage.setItem('unitOneResults_grade5', JSON.stringify(results));
+    }
+
+    function renderTeacherTable() {
+        const tbody = document.getElementById('results-table-body');
+        tbody.innerHTML = '';
+        let results = JSON.parse(localStorage.getItem('unitOneResults_grade5') || '[]');
+
+        if (results.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10">لا توجد نتائج مسجلة لجولات الوحدة الأولى حتى الآن</td></tr>';
+            return;
+        }
+
+        results.forEach((r, idx) => {
+            const total = calculateTotalScore(r);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td><strong>${r.name}</strong></td>
+                <td>${r.grade || 'الخامس'}</td>
+                <td>${r.classGroup}</td>
+                <td>${r.stage1 !== undefined ? r.stage1 : '-'}</td>
+                <td>${r.stage2 !== undefined ? r.stage2 : '-'}</td>
+                <td>${r.stage3 !== undefined ? r.stage3 : '-'}</td>
+                <td>${r.stage4 !== undefined ? r.stage4 : '-'}</td>
+                <td style="color:var(--accent); font-weight:bold;">${total}</td>
+                <td>${r.dateTime || r.date || '-'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function exportToExcel() {
+        let results = JSON.parse(localStorage.getItem('unitOneResults_grade5') || '[]');
+        if (results.length === 0) {
+            alert("لا توجد بيانات للتصدير!");
+            return;
+        }
+
+        let tableRows = '';
+        results.forEach((r, index) => {
+            const total = calculateTotalScore(r);
+            tableRows += `
+                <tr>
+                    <td style="text-align: center;">${index + 1}</td>
+                    <td style="text-align: right;">${r.name}</td>
+                    <td style="text-align: center;">${r.grade || 'الخامس'}</td>
+                    <td style="text-align: center;">${r.classGroup}</td>
+                    <td style="text-align: center;">${r.stage1 !== undefined ? r.stage1 : '-'}</td>
+                    <td style="text-align: center;">${r.stage2 !== undefined ? r.stage2 : '-'}</td>
+                    <td style="text-align: center;">${r.stage3 !== undefined ? r.stage3 : '-'}</td>
+                    <td style="text-align: center;">${r.stage4 !== undefined ? r.stage4 : '-'}</td>
+                    <td style="text-align: center; font-weight: bold; background-color: #f1c40f; color: #000;">${total}</td>
+                    <td style="text-align: center;">${r.dateTime || r.date || '-'}</td>
+                </tr>
+            `;
+        });
+
+        const excelTemplate = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta http-equiv="content-type" content="text/plain; charset=UTF-8"/>
+                <!--[if gte mso 9]>
+                <xml>
+                    <x:ExcelWorkbook>
+                        <x:ExcelWorksheets>
+                            <x:ExcelWorksheet>
+                                <x:Name>نتائج الطلاب</x:Name>
+                                <x:WorksheetOptions>
+                                    <x:DisplayRightToLeft/>
+                                </x:WorksheetOptions>
+                            </x:ExcelWorksheet>
+                        </x:ExcelWorksheets>
+                    </x:ExcelWorkbook>
+                </xml>
+                <![endif]-->
+            </head>
+            <body dir="rtl">
+                <table border="1">
+                    <thead>
+                        <tr style="background-color: #9b59b6; color: #ffffff; font-weight: bold;">
+                            <th>#</th>
+                            <th>الاسم الثلاثي</th>
+                            <th>الصف</th>
+                            <th>الشعبة</th>
+                            <th>الجولة 1</th>
+                            <th>الجولة 2</th>
+                            <th>الجولة 3</th>
+                            <th>الجولة 4</th>
+                            <th>المجموع</th>
+                            <th>التاريخ والوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `نتائج_الصف_الخامس_الوحدة_الأولى_${new Date().toLocaleDateString('ar-EG')}.xls`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function clearData() {
+        if (confirm("هل أنت متأكد من مسح جميع سجلات الصف الخامس؟")) {
+            localStorage.removeItem('unitOneResults_grade5');
+            renderTeacherTable();
+        }
+    }
+
+    function drawSpaceTrack() {
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ffffff';
+        stars.forEach(s => {
+            s.x -= s.speed;
+            if(s.x < 0) s.x = canvas.width;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        const portalX = canvas.width - 40;
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.ellipse(portalX, canvas.height/2, 15, canvas.height/2 - 10, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(shipX, canvas.height / 2);
+        
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.moveTo(-15, 0);
+        ctx.lineTo(-25, -6);
+        ctx.lineTo(-25, 6);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = currentStudent.color;
+        ctx.beginPath();
+        ctx.moveTo(20, 0);
+        ctx.lineTo(-15, -12);
+        ctx.lineTo(-10, 0);
+        ctx.lineTo(-15, 12);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(3, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function gameLoop() {
+        drawSpaceTrack();
+        if (document.getElementById('game-screen').classList.contains('active')) {
+            requestAnimationFrame(gameLoop);
+        }
+    }
+
+    // بنك أسئلة الوحدة الأولى (الخلية) - كتاب العلوم والحياة للصف الخامس الأساسي
+    const unitOneQuestions = [
+        // الجولة 1: الأسئلة التنافسية والإجابات القصيرة
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "1. وحدة البناء الأساسية في الكائن الحي هي:", options: ["الخلية", "النسيج", "العضو", "الجهاز"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "2. أي الكائنات الحية التالية يُعد كائناً وحيد الخلية؟", options: ["البكتيريا", "الشجرة", "البقرة", "الإنسان"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "3. السائل الهلامي الذي يملأ فراغ الخلية وتوجد بداخل النواة والعضيات هو:", options: ["السيتوبلازم", "الغشاء الخلوي", "النسيج", "المادة الوراثية"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "4. المكون الذي تشترك فيه الخلايا الحيوانية والنباتية والبكتيرية هو:", options: ["السيتوبلازم", "البلاستيدات الخضراء", "النواة الحقيقية", "الجدار الخلوي"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "5. الترتيب الصحيح لمستويات التنظيم الحيوي في الكائن الحي هو:", options: ["خلية ← نسيج ← عضو ← جهاز", "خلية ← عضو ← نسيج ← جهاز", "جهاز ← عضو ← نسيج ← خلية", "نسيج ← خلية ← عضو ← جهاز"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "6. مجموعة من الأنسجة أو الأعضاء تتكامل لأداء وظيفة محددة تُعرف بـ:", options: ["الجهاز", "الخلية", "العضية", "السيتوبلازم"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "7. عضيات تُكسب الخلية النباتية اللون الأخضر وتصنع الغذاء هي:", options: ["البلاستيدات الخضراء", "السيتوبلازم", "الجدار الخلوي", "المادة الوراثية"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "8. خلية تكون فيها المادة الوراثية غير محاطة بغلاف نووي هي خلية:", options: ["بدائية النواة", "حقيقية النواة", "حيوانية حقيقية", "نباتية حقيقية"], answer: 0 },
+        { stageNum: 1, stage: "الجولة 1: الأسئلة التنافسية والإجابات القصيرة", q: "9. معلومات توجد داخل النواة تحدد صفات الكائن الحي وتنقلها من الآباء للأبناء هي:", options: ["المادة الوراثية", "الغشاء الخلوي", "السيتوبلازم", "البلاستيدة"], answer: 0 },
+
+        // الجولة 2: المقارنة والتصنيف
+        { stageNum: 2, stage: "الجولة 2: المقارنة والتصنيف", q: "1. الجدار الخلوي يُعتبر موجوداً في كل من الخلية النباتية و:", options: ["الخلية البكتيرية", "الخلية الحيوانية فقط", "خلايا الإنسان", "الدم البشري"], answer: 0 },
+        { stageNum: 2, stage: "الجولة 2: المقارنة والتصنيف", q: "2. البلاستيدات الخضراء تُوجد فقط في الخلية:", options: ["النباتية", "الحيوانية", "البكتيرية", "الفيروسية"], answer: 0 },
+        { stageNum: 2, stage: "الجولة 2: المقارنة والتصنيف", q: "3. الخلية البكتيرية تختلف عن الخلية النباتية والحيوانية بأنها:", options: ["بدائية النواة", "حقيقية النواة", "لا تحتوي على سيتوبلازم", "تُشاهد بالعين المجردة"], answer: 0 },
+        { stageNum: 2, stage: "الجولة 2: المقارنة والتصنيف", q: "4. الخلية الحيوانية تتميز بـ:", options: ["عدم وجود جدار خلوي", "وجود جدار خلوي قوي", "احتواؤها على بلاستيدات خضراء", "أنها بدائية النواة"], answer: 0 },
+
+        // الجولة 3: التفكير والتعليل العلميان
+        { stageNum: 3, stage: "الجولة 3: التفكير والتعليل العلميان", q: "1. علل: للخلية النباتية شكل محدد بينما الخلية الحيوانية ليس لها شكل محدد؟", options: ["لاحتواء النباتية على جدار خلوي", "لأن الحيوانية فيها بلاستيدات", "لأن الحيوانية أصغر حجماً", "لأن النباتية بدائية النواة"], answer: 0 },
+        { stageNum: 3, stage: "الجولة 3: التفكير والتعليل العلميان", q: "2. سبب استخدام المجهر الضوئي في دراسة الخلايا هو:", options: ["لأن الخلايا صغيرة جداً ولا تُرى بالعين المجردة", "لتغيير ألوان الخلايا", "لقتل خلايا البكتيريا", "لزيادة حجم الكائنات الحيوانية"], answer: 0 },
+        { stageNum: 3, stage: "الجولة 3: التفكير والتعليل العلميان", q: "3. ماذا يحدث عند تمزق الغشاء الخلوي في الخلية؟", options: ["خروج مكونات الخلية وموتها", "تنمو الخلية بسرعة", "تتحول لخلية نباتية", "تنتج بلاستيدات خضراء"], answer: 0 },
+        { stageNum: 3, stage: "الجولة 3: التفكير والتعليل العلميان", q: "4. ماذا تتوقع أن يحدث عند إزالة البلاستيدات الخضراء من الخلية النباتية؟", options: ["تفقد قدرتها على صنع الغذاء والأخضرار", "تزداد سرعة نموها", "تتحول إلى خلية بكتيرية", "تتضاعف المادة الوراثية"], answer: 0 },
+
+        // الجولة 4: المحاكاة والتجارب والأنشطة
+        { stageNum: 4, stage: "الجولة 4: المحاكاة والتجارب والأنشطة", q: "1. في نشاط (أحاكي الخلية)، ما المكون الذي يقوم بتعريف نفسه على أنه يتحكم في دخول وخروج المواد؟", options: ["الغشاء الخلوي (البلازمي)", "الجدار الخلوي", "النواة", "البلاستيدة الخضراء"], answer: 0 },
+        { stageNum: 4, stage: "الجولة 4: المحاكاة والتجارب والأنشطة", q: "2. عند تصميم نموذج للفيروسات أو الخلايا، يُفضل استخدام خامات من:", options: ["البيئة المحيطة والتالفة", "الأطعمة الطازجة", "المواد السامة", "المعادن الثقيلة فقط"], answer: 0 },
+        { stageNum: 4, stage: "الجولة 4: المحاكاة والتجارب والأنشطة", q: "3. الطالب الذي يمثل دور (النواة) في نشاط المحاكاة يُعبر عن نفسه بأنه:", options: ["مركز التحكم وتحوي المادة الوراثية", "السائل الذي يملأ الخلية", "العضو المسؤول عن الحركة", "الغطاء الخارجي الصلب"], answer: 0 },
+        { stageNum: 4, stage: "الجولة 4: المحاكاة والتجارب والأنشطة", q: "4. لإعداد شريحة مجهرية لمشاهدة خلايا غشاء بصل نستخدم:", options: ["المجهر الضوئي والصبغة", "المجهر الإلكتروني فقط", "العدسة المكبرة اليدوية", "العين المجردة"], answer: 0 }
+    ];
+</script>
+</body>
+</html>
